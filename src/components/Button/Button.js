@@ -11,7 +11,14 @@ const button = (props) => {
     }
     return (
         <Aux>
-            <div className={modifiedList.join(" ")}>{props.children}</div>
+            <div 
+                className={modifiedList.join(" ")} 
+                value={props.value} 
+                type={props.type}
+                onClick={props.clicked}
+            >
+                {props.children}
+            </div>
         </Aux>
     );
 };
