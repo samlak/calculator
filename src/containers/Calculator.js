@@ -1,3 +1,4 @@
+/* eslint no-eval: 0 */
 import React, {Component} from 'react';
 
 import classes from './Calculator.module.css';
@@ -9,8 +10,9 @@ class Calculator extends Component {
     state = {
         firstValue: '',
         secondValue: '',
-        operator: null,
-        result: null
+        operator: '',
+        result: null,
+        isCalculated: false
     }
 
     clickHandler = (option) => {
@@ -45,16 +47,32 @@ class Calculator extends Component {
         }
 
         const calculation = (firstValue, secondValue, operator) => {
-            // let result = 0;
+            let result = 0;
             if(secondValue !== null){
-                let result = eval(Number(firstValue) + operator + Number(secondValue));
-                console.log(result); 
+                result = eval(Number(firstValue) + operator + Number(secondValue));
+            } else{
+                result = Number(firstValue) ** 2;
             }
+            this.setState({
+                result,
+                isCalculated: true
+            }); 
         }
 
         if(option.type === 'number'){
-            if(this.state.operator === null && this.state.result === null){
+            if(this.state.operator === '' && this.state.result === null){
                 paramFunction(option, "firstValue") 
+            } else if (this.state.operator === 'x2') {
+                // this.setState((prevState, props) => {
+                //     return {
+                //         firstValue: prevState.result,
+                //         secondValue: '',
+                //         // operator: '',
+                //         result: null,
+                //         isCalculated: false
+                //     }
+                // });
+                // paramFunction(option, "secondValue") 
             } else {
                 paramFunction(option, "secondValue") 
             } 
@@ -63,24 +81,61 @@ class Calculator extends Component {
                 this.setState({
                     firstValue: '',
                     secondValue: '',
-                    operator: null,
+                    operator: '',
+                    isCalculated: false,
                     result: null
                 });
             } else if (option.value === 'c') {
-                if(this.state.operator === null) {
-                    this.setState({firstValue: '', result: null});
+                if(this.state.operator === '') {
+                    this.setState({firstValue: '', isCalculated: false, result: null});
                 } else {
-                    this.setState({secondValue: '', result: null});
+                    this.setState({secondValue: '', isCalculated: false, result: null});
                 }
-            } else if (this.state.firstValue !== '') {
-                if (option.value === '=') {
-                    if (this.state.operator !== null && this.state.secondValue !== '') {
-                        calculation(this.state.firstValue, this.state.secondValue, this.state.operator)
+            } else {
+                if (this.state.firstValue !== '' && this.state.secondValue === '') {
+                    if (option.value === '=') {
+                        if (this.state.operator !== '' && this.state.secondValue !== '') {
+                            calculation(this.state.firstValue, this.state.secondValue, this.state.operator)
+                        }
+                    } else if (option.value === 'x2') {
+                        updateOperator(option.value);
+                        calculation(this.state.firstValue, null, null);
+                        this.setState((prevState, props) => {
+                            return {
+                                firstValue: prevState.result,
+                                isCalculated: false
+                            }
+                        });
+                    } else {
+                        updateOperator(option.value);
                     }
-                } else if (option.value === 'x2') {
-                    updateOperator(option.value);
-                } else {
-                    updateOperator(option.value);
+                } else if (this.state.operator !== '') {
+                    if (option.value === '=') {
+                        if (this.state.operator !== '' && this.state.secondValue !== '') {
+                            calculation(this.state.firstValue, this.state.secondValue, this.state.operator)
+                        }
+                    } else if (option.value === 'x2') {
+                        updateOperator(option.value);
+                        calculation(this.state.firstValue, null, null);
+                        this.setState((prevState, props) => {
+                            return {
+                                firstValue: prevState.result,
+                                secondValue: '',
+                                isCalculated: false
+                            }
+                        });
+                    } else if (option.value !== '=') {
+                        calculation(this.state.firstValue, this.state.secondValue, this.state.operator)
+                        this.setState((prevState, props) => {
+                            return {
+                                firstValue: prevState.result,
+                                secondValue: '',
+                                operator: option.value,
+                                result: null,
+                                isCalculated: false
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -88,13 +143,25 @@ class Calculator extends Component {
 
     render() {
         let operation = `${this.state.firstValue} ${this.state.operator} ${this.state.secondValue}`;
+        let value = 0;
+        if(this.state.isCalculated === false){
+            if(this.state.firstValue !== '' && this.state.secondValue === ''){
+                value = this.state.firstValue;
+            }
+            if(this.state.secondValue !== ''){
+                value = this.state.secondValue;
+            }
+        }
+        if(this.state.isCalculated){
+            value = this.state.result;
+        }
         return (
             <Aux>
                 <div className={classes.container}>
                     <div className={classes.calc_body}>
                         <Screen 
                             operation={operation} 
-                            value={this.state.firstValue}   
+                            value={value}   
                         />
                         <Buttons
                             clicked={this.clickHandler}
