@@ -20,6 +20,28 @@
     color: #fff;
 }
 
+.calc_screen_modified {
+    background: #3A4655;
+    width: 100%;
+    height: 150px;
+    padding: 20px;
+}
+
+.calc_operation_modified {
+    font-size: 15px;
+    text-align: right;
+    color: #727B86;
+    padding-bottom: 10px;
+    border-bottom: dotted 1px;
+}
+
+.calc_typed_modified {
+    font-size: 25px;
+    margin-top: 20px;
+    text-align: right;
+    color: #fff;
+}
+
 /* .blink_me {
     color: #E0B612;
 } */

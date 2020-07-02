@@ -102,8 +102,8 @@ class Calculator extends Component {
                         calculation(this.state.firstValue, null, null);
                         this.setState((prevState, props) => {
                             return {
-                                firstValue: prevState.result,
-                                isCalculated: false
+                                firstValue: prevState.firstValue,
+                                isCalculated: true
                             }
                         });
                     } else {
@@ -121,7 +121,7 @@ class Calculator extends Component {
                             return {
                                 firstValue: prevState.result,
                                 secondValue: '',
-                                isCalculated: false
+                                isCalculated: true
                             }
                         });
                     } else if (option.value !== '=') {
@@ -155,11 +155,16 @@ class Calculator extends Component {
         if(this.state.isCalculated){
             value = this.state.result;
         }
+        let screenClass = "initial";
+        if ((this.state.firstValue).length > 10 || (this.state.secondValue).length > 10) {
+            screenClass = "modified";
+        }
         return (
             <Aux>
                 <div className={classes.container}>
                     <div className={classes.calc_body}>
                         <Screen 
+                            classes={screenClass}
                             operation={operation} 
                             value={value}   
                         />
